@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebTest...</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            updateUsers();
+
+
+            $("#btnRegisterUser").click(function () {
+                var username = $("#txtRegisterUsername").val();
+                var firstname = $("#txtRegisterFirstName").val();
+                var lastname = $("#txtRegisterLastNamme").val();
+
+                var user = {};
+                user.username = username;
+                user.firstname = firstname;
+                user.lastname = lastname;
+
+
+                //Register a user
+                $.ajax({
+                    type: "POST",
+                    url: "webapi/userAPI/",
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: JSON.stringify(user),
+                    success: function () {
+                        $("#lblSuccess").text("User added");
+                        updateUsers();
+                    },
+                    error: function (jqxhr, e, errorthrown) {
+                        alert(jqxhr.responseText);
+                    }
+                });
+            });
+
+            $("#btnSaveChanges").click(function () {
+                var user = $(this).data('user');
+                var firstName = $("#txtModifyFirstname").val();
+                var lastname = $("#txtModifyLastname").val();
+                user.firstname = firstName;
+                user.lastname = lastname;
+
+
+                $.ajax({
+                    type: "PUT",
+                    url: "webapi/userAPI/user.ID",
+                    contentType: "application/json",
+                    data: JSON.stringify(user),
+                    dataType: "json",
+                    success: function () {
+                        alert('user saved');
+                    },
+                    error: function (jqxhr, status, errothrown) {
+
+                        alert(errothrown);
+                    }
+                })
+            });
+
+        });
+
+        function updateUsers() {
+            $.ajax({
+                type: "GET",
+                url: "webapi/userAPI/",
+                success: function (d) {
+                    $("#userContainer").children().remove();
+                    for (var i = 0; i < d.length; i++) {
+                        var user = d[i];
+                        $("#userContainer").append($("<li>").text(user.username).data('id', user.ID).click(function () {
+                            loadUser(user);
+                        }));
+                    }
+                }
+            })
+        }
+
+        function loadUser(clickedUser) {
+            $.ajax({
+                type: "GET",
+                url: "webapi/userAPI/search/" + clickedUser.username,
+                contentType: "application/json",
+                dataType: "json",
+                success: function (user) {
+                    if (user != null) {
+                        $("#modifyUsers").show();
+                        $("#lblModifyUsername").text(user.username);
+                        $("#txtModifyFirstname").val(user.firstname);
+                        $("#txtModifyLastname").val(user.lastname);
+                        $("#btnSaveChanges").data('user', user);
+                    }
+                },
+                error: function (jqxhr, status, errothrown) {
+                    $("#modifyUsers").hide();
+                }
+            })
+        }
+    </script>
+</head>
+<body>
+<fieldset id="fieldsetRegister">
+    <legend>Register user</legend>
+    <label for="txtRegisterUsername">Username</label>
+    <input id="txtRegisterUsername" type="text"/>
+    <label for="txtRegisterFirstName">Firstname</label>
+    <input id="txtRegisterFirstName" type="text"/>
+    <label for="txtRegisterLastNamme">Last name</label>
+    <input id="txtRegisterLastNamme" type="text"/>
+
+    <button id="btnRegisterUser" onclick="return false;">Register</button>
+    <label id="lblSuccess"></label>
+</fieldset>
+<fieldset id="fielSetUsers">
+    <legend>User container</legend>
+    <ul id="userContainer"></ul>
+</fieldset>
+
+<fieldset id="modifyUsers" style="display:none">
+    <legend>Modify user</legend>
+    <label id="lblModifyUsername"></label>
+    <input type="text" id="txtModifyFirstname"/>
+    <input type="text" id="txtModifyLastname"/>
+    <button id="btnSaveChanges" onclick="return false;">Save changes</button>
+</fieldset>
+</body>
+</html>
