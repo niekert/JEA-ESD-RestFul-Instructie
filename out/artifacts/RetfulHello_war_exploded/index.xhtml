@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+</h:head>
+<f:view contentType="text/html">
+    <h:form id="formRegister">
+    <fieldset>
+        <legend>Register user</legend>
+
+        <h:outputLabel for="txtRegisterUsername" value="Username"/>
+        <h:inputText id="txtRegisterUsername" value="#{userController.username}"/>
+        <h:outputLabel for="txtRegisterFirstName" value="First name"/>
+        <h:inputText id="txtRegisterFirstName" value="#{userController.firstname}"/>
+        <h:outputLabel for="txtRegisterLastName" value="Last name"/>
+        <h:inputText id="txtRegisterLastName" value="#{userController.lastname}"/>
+
+        <h:commandButton actionListener="#{userController.register}"
+                         value="Register"/>
+
+
+    </fieldset>
+    </h:form>
+
+    <h:form>
+        <p:dataList value="#{userController.users}" var="user" id="users"
+                    paginator="true" rows="5"
+                    paginatorTemplate="{PreviousPageLink} {CurrentPageReport} {NextPageLink} {RowsPerPageDropdown}"
+                    rowsPerPageTemplate="5,10,15" type="none">
+
+            <f:facet name="header">
+                Users
+            </f:facet>
+
+
+            <p:column>
+                <h:outputText value="#{user.username}" style="margin-right: 30px;"/>
+            </p:column>
+
+            <p:column>
+                <h:outputText value="#{user.firstname}" style="margin-right: 30px"/>
+            </p:column>
+
+            <p:column>
+                <h:outputText value="#{user.lastname}" style="margin-right: 30px"/>
+            </p:column>
+
+            <p:column>
+                <h:commandButton actionListener="#{userController.editUser(user)}" value="Edit user"/>
+            </p:column>
+        </p:dataList>
+    </h:form>
+
+
+    <h:form>
+        <h:panelGroup layout="block" rendered="#{userController.editedUser != null}">
+            <fieldset>
+                <legend>Edit user</legend>
+                <h:outputText value="#{userController.editedUser.username}"/>
+                <h:inputText value="#{userController.editedUser.firstname}"/>
+                <h:inputText value="#{userController.editedUser.lastname}"/>
+
+                <h:commandButton actionListener="#{userController.saveUserChanges}" value="Save changes"/>
+            </fieldset>
+        </h:panelGroup>
+    </h:form>
+
+</f:view>
+</html>
