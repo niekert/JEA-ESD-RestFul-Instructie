@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+</h:head>
+<f:view contentType="text/html">
+    <h:form id="form">
+        <p:outputLabel for="txtUsername" value="Username"/>
+        <p:inputText id="txtUsername" value="#{soapController.username}"/>
+
+
+        <fieldset>
+            <legend>Post</legend>
+            <p:outputLabel for="txtPost" value="Tweet content"/>
+            <p:inputText id="txtPost" value="#{soapController.tweetContents}"/>
+            <p:commandButton id="btnPost" value="Post tweet" actionListener="#{soapController.postTweet}" update="#{soapController.timeline}"/>
+        </fieldset>
+
+        <fieldset>
+            <legend>Timelime</legend>
+
+            <p:dataTable id="datatable"
+                    var="tweet" value="#{soapController.timeline}"
+                         paginator="true" rows="15"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                         emptyMessage="There's nothing on your timeline">
+                <f:facet name="header">
+                    <p:outputLabel
+                            value="#{soapController.username}'s timeline"/>
+                </f:facet>
+                <p:column>
+                    <div>
+                        <h:outputLink styleClass="profileLink"
+                                      value="profile/#{tweet.username}">@#{tweet.username}</h:outputLink>
+
+                        <p class="tweetContent">
+                            <h:outputText value="#{tweet.content}"/>
+                        </p>
+
+                        <div class="small">
+                            <h:outputText
+                                    value="#{tweet.posted.toString()} from #{tweet.from}"/>
+                        </div>
+                    </div>
+                </p:column>
+            </p:dataTable>
+            <p:commandButton update="datatable" value="Refresh timeline"/>
+        </fieldset>
+
+    </h:form>
+
+</f:view>
+</html>
